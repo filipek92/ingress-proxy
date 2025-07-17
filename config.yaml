@@ -1,6 +1,6 @@
 name: "Ingress Proxy"
 description: "Proxy server pro přístup k lokálním zařízením v síti s možností přepisování cest"
-version: "1.0.0"
+version: "1.0.1"
 slug: "ingress-proxy"
 arch:
   - aarch64
@@ -43,4 +43,3 @@ schema:
   certfile: str?
   keyfile: str?
   log_level: list(debug|info|warning|error)?
-image: "ghcr.io/{arch}-addon-ingress-proxy"
