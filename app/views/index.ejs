@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingress Proxy - Správa zařízení</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .device-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #3498db;
+        }
+
+        .device-card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .device-info {
+            margin-bottom: 1rem;
+        }
+
+        .device-info strong {
+            color: #555;
+        }
+
+        .device-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .status-online {
+            color: #27ae60;
+        }
+
+        .status-offline {
+            color: #e74c3c;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-devices {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .no-devices i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .device-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Ingress Proxy</h1>
+            <p>Správa přístupu k lokálním zařízením v síti</p>
+        </div>
+
+        <div class="card">
+            <h2>Přehled zařízení</h2>
+            <button class="btn btn-success" onclick="openAddDeviceModal()">
+                ➕ Přidat nové zařízení
+            </button>
+            <button class="btn btn-warning" onclick="reloadNginx()">
+                🔄 Restartovat Nginx
+            </button>
+        </div>
+
+        <div id="devices-container">
+            <% if (devices.length === 0) { %>
+                <div class="no-devices">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📱</div>
+                    <h3>Žádná zařízení</h3>
+                    <p>Zatím nemáte nakonfigurovaná žádná zařízení. Klikněte na tlačítko výše pro přidání prvního zařízení.</p>
+                </div>
+            <% } else { %>
+                <div class="device-grid">
+                    <% devices.forEach((device, index) => { %>
+                        <div class="device-card">
+                            <h3>🔗 <%= device.name %></h3>
+                            <div class="device-info">
+                                <div><strong>Cílový host:</strong> <%= device.target_host %>:<%= device.target_port %></div>
+                                <div><strong>Cesta:</strong> <%= device.path_prefix || `/${device.name.replace(/[^a-zA-Z0-9]/g, '_')}` %></div>
+                                <div><strong>Přepisování cest:</strong> <%= device.rewrite_paths !== false ? 'Ano' : 'Ne' %></div>
+                                <div><strong>Autentizace:</strong> <%= device.auth_required ? 'Vyžadována' : 'Nevyžadována' %></div>
+                            </div>
+                            <div class="device-actions">
+                                <a href="<%= device.path_prefix || `/${device.name.replace(/[^a-zA-Z0-9]/g, '_')}` %>" 
+                                   class="btn" target="_blank">📱 Otevřít</a>
+                                <button class="btn btn-warning" onclick="testDevice(<%= index %>)">🔍 Test</button>
+                                <button class="btn btn-primary" onclick="editDevice(<%= index %>)">✏️ Upravit</button>
+                                <button class="btn btn-danger" onclick="deleteDevice(<%= index %>)">🗑️ Smazat</button>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Modal pro přidání/úpravu zařízení -->
+    <div id="deviceModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Přidat nové zařízení</h2>
+            <form id="deviceForm">
+                <div class="form-group">
+                    <label for="deviceName">Název zařízení *</label>
+                    <input type="text" id="deviceName" name="name" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="targetHost">Cílový host *</label>
+                        <input type="text" id="targetHost" name="target_host" placeholder="192.168.1.100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="targetPort">Port *</label>
+                        <input type="number" id="targetPort" name="target_port" placeholder="80" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pathPrefix">Cesta (volitelné)</label>
+                    <input type="text" id="pathPrefix" name="path_prefix" placeholder="/device1">
+                    <small>Pokud není zadáno, použije se /název_zařízení</small>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="rewritePaths" name="rewrite_paths" checked>
+                        <label for="rewritePaths">Přepisovat cesty v obsahu</label>
+                    </div>
+                    <small>Doporučeno pro zařízení, která neočekávají provoz v podsložce</small>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="authRequired" name="auth_required">
+                        <label for="authRequired">Vyžadovat autentizaci</label>
+                    </div>
+                </div>
+                
+                <div id="authFields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="basicAuthUser">Uživatelské jméno</label>
+                            <input type="text" id="basicAuthUser" name="basic_auth_user">
+                        </div>
+                        <div class="form-group">
+                            <label for="basicAuthPass">Heslo</label>
+                            <input type="password" id="basicAuthPass" name="basic_auth_pass">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customHeaders">Vlastní HTTP hlavičky (jedna na řádek)</label>
+                    <textarea id="customHeaders" name="custom_headers" rows="3" 
+                              placeholder="X-Forwarded-For: $remote_addr&#10;X-Custom-Header: value"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal()">Zrušit</button>
+                    <button type="submit" class="btn btn-success">Uložit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let editingIndex = -1;
+        
+        // Modal functions
+        function openAddDeviceModal() {
+            editingIndex = -1;
+            document.getElementById('modalTitle').textContent = 'Přidat nové zařízení';
+            document.getElementById('deviceForm').reset();
+            document.getElementById('deviceModal').style.display = 'block';
+        }
+        
+        function editDevice(index) {
+            editingIndex = index;
+            document.getElementById('modalTitle').textContent = 'Upravit zařízení';
+            
+            fetch('/api/devices')
+                .then(response => response.json())
+                .then(devices => {
+                    const device = devices[index];
+                    document.getElementById('deviceName').value = device.name;
+                    document.getElementById('targetHost').value = device.target_host;
+                    document.getElementById('targetPort').value = device.target_port;
+                    document.getElementById('pathPrefix').value = device.path_prefix || '';
+                    document.getElementById('rewritePaths').checked = device.rewrite_paths !== false;
+                    document.getElementById('authRequired').checked = device.auth_required || false;
+                    document.getElementById('basicAuthUser').value = device.basic_auth_user || '';
+                    document.getElementById('basicAuthPass').value = device.basic_auth_pass || '';
+                    
+                    if (device.custom_headers) {
+                        document.getElementById('customHeaders').value = device.custom_headers.join('\n');
+                    }
+                    
+                    toggleAuthFields();
+                    document.getElementById('deviceModal').style.display = 'block';
+                });
+        }
+        
+        function closeModal() {
+            document.getElementById('deviceModal').style.display = 'none';
+            editingIndex = -1;
+        }
+        
+        function toggleAuthFields() {
+            const authRequired = document.getElementById('authRequired').checked;
+            document.getElementById('authFields').style.display = authRequired ? 'block' : 'none';
+        }
+        
+        // Event listeners
+        document.getElementById('authRequired').addEventListener('change', toggleAuthFields);
+        
+        document.getElementsByClassName('close')[0].addEventListener('click', closeModal);
+        
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('deviceModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // Form submission
+        document.getElementById('deviceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const deviceData = {
+                name: formData.get('name'),
+                target_host: formData.get('target_host'),
+                target_port: parseInt(formData.get('target_port')),
+                path_prefix: formData.get('path_prefix'),
+                rewrite_paths: formData.get('rewrite_paths') === 'on',
+                auth_required: formData.get('auth_required') === 'on',
+                basic_auth_user: formData.get('basic_auth_user'),
+                basic_auth_pass: formData.get('basic_auth_pass'),
+                custom_headers: formData.get('custom_headers') ? 
+                    formData.get('custom_headers').split('\n').filter(h => h.trim()) : []
+            };
+            
+            const url = editingIndex >= 0 ? `/api/devices/${editingIndex}` : '/api/devices';
+            const method = editingIndex >= 0 ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(deviceData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Chyba: ' + data.error);
+                } else {
+                    alert(data.message);
+                    closeModal();
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Chyba:', error);
+                alert('Chyba při ukládání zařízení');
+            });
+        });
+        
+        // Test device connection
+        function testDevice(index) {
+            const button = event.target;
+            const originalText = button.textContent;
+            button.innerHTML = '<span class="loading"></span> Testuje se...';
+            button.disabled = true;
+            
+            fetch(`/api/devices/${index}/test`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`✅ Zařízení je dostupné (HTTP ${data.status})`);
+                } else {
+                    alert(`❌ Zařízení není dostupné: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Chyba:', error);
+                alert('❌ Chyba při testování zařízení');
+            })
+            .finally(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+            });
+        }
+        
+        // Delete device
+        function deleteDevice(index) {
+            if (confirm('Opravdu chcete smazat toto zařízení?')) {
+                fetch(`/api/devices/${index}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Chyba: ' + data.error);
+                    } else {
+                        alert(data.message);
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Chyba:', error);
+                    alert('Chyba při mazání zařízení');
+                });
+            }
+        }
+        
+        // Reload nginx
+        function reloadNginx() {
+            const button = event.target;
+            const originalText = button.textContent;
+            button.innerHTML = '<span class="loading"></span> Restartuje se...';
+            button.disabled = true;
+            
+            fetch('/api/reload')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Chyba: ' + data.error);
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Chyba:', error);
+                    alert('Chyba při restartování Nginx');
+                })
+                .finally(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                });
+        }
+    </script>
+</body>
+</html>

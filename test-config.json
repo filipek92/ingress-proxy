@@ -1,0 +1,32 @@
+{
+  "_comment": "Test konfigurace pro Ingress Proxy addon - umístěte do Home Assistant: config/addons/ingress-proxy/options.json",
+  "devices": [
+    {
+      "name": "Test Router",
+      "target_host": "192.168.1.1",
+      "target_port": 80,
+      "path_prefix": "/router",
+      "rewrite_paths": true,
+      "auth_required": false,
+      "custom_headers": [
+        "X-Forwarded-For: $remote_addr",
+        "X-Forwarded-Proto: $scheme"
+      ]
+    },
+    {
+      "name": "Test NAS",
+      "target_host": "192.168.1.100",
+      "target_port": 5000,
+      "path_prefix": "/nas",
+      "rewrite_paths": true,
+      "auth_required": true,
+      "basic_auth_user": "admin",
+      "basic_auth_pass": "testpass",
+      "custom_headers": [
+        "X-Forwarded-For: $remote_addr"
+      ]
+    }
+  ],
+  "ssl": false,
+  "log_level": "info"
+}

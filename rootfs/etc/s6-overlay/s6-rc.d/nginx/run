@@ -1,0 +1,25 @@
+#!/command/with-contenv bashio
+# ==============================================================================
+# Start nginx service
+# ==============================================================================
+
+bashio::log.info "Starting nginx..."
+
+# Ensure directories exist
+mkdir -p /etc/nginx/devices
+mkdir -p /etc/nginx/conf.d
+mkdir -p /etc/nginx/auth
+mkdir -p /var/log/nginx
+mkdir -p /var/lib/nginx/tmp
+mkdir -p /run/nginx
+
+# Set proper permissions
+chown -R root:root /etc/nginx
+chmod -R 755 /etc/nginx
+
+# Test nginx configuration
+bashio::log.info "Testing nginx configuration..."
+nginx -t
+
+# Start nginx
+exec nginx -g "daemon off;"

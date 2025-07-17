@@ -1,0 +1,17 @@
+#!/command/with-contenv bashio
+# ==============================================================================
+# Start Node.js application
+# ==============================================================================
+
+bashio::log.info "Starting Node.js application..."
+
+cd /app
+
+# Install dependencies if needed
+if [ ! -d "node_modules" ]; then
+    bashio::log.info "Installing Node.js dependencies..."
+    npm install
+fi
+
+# Start the application
+exec node server.js
