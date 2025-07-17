@@ -112,8 +112,20 @@ Tato chyba se může objevit u zařízení, která mají problém s dlouhými HT
 
 **Řešení:**
 1. V konfiguraci zařízení zapněte **"Minimalizovat HTTP hlavičky"**
-2. Toto odstraní volitelné hlavičky jako `X-Forwarded-Host` a `X-Forwarded-Port`
-3. Zachovají se pouze základní hlavičky: `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`
+2. Rozšířená minimalizace provádí následující optimalizace:
+
+**Server-side hlavičky:**
+- Odstraní volitelné hlavičky: `X-Forwarded-Host`, `X-Forwarded-Port`
+- Zachová základní: `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`
+
+**Client-side optimalizace:**
+- Zvětší proxy buffery: `proxy_buffer_size 8k`, `proxy_buffers 16 8k`
+- Odstraní problematické hlavičky: `Accept-Encoding`, `Cookie`
+- Nastaví jednoduchý `User-Agent: "HA-Proxy"`
+
+**Globální nginx nastavení:**
+- Zvětší buffery pro klientské hlavičky: `large_client_header_buffers 8 16k`
+- Maximální velikost těla požadavku: `client_max_body_size 100M`
 
 ### Zařízení není dostupné
 1. Zkontrolujte IP adresu a port

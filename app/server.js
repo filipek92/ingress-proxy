@@ -118,12 +118,32 @@ location ${pathPrefix}/ {
     proxy_connect_timeout 30s;
     proxy_send_timeout 30s;
     proxy_read_timeout 30s;
+    `;
+
+    // Rozšířená minimalizace - upravené buffer nastavení pro velké hlavičky
+    if (deviceMinimize) {
+        config += `
+    # Minimalizace hlaviček - zvětšené buffery pro HTTP 414 fix
+    proxy_buffer_size 8k;
+    proxy_buffers 16 8k;
+    proxy_busy_buffers_size 16k;
+    large_client_header_buffers 4 16k;
     
-    # Buffer nastavení
+    # Odstranění problematických hlaviček
+    proxy_set_header Accept-Encoding "";
+    proxy_set_header User-Agent "HA-Proxy";
+    proxy_set_header Cookie "";
+    `;
+    } else {
+        config += `
+    # Standardní buffer nastavení
     proxy_buffering on;
     proxy_buffer_size 4k;
     proxy_buffers 8 4k;
-    
+    `;
+    }
+
+    config += `
     # Přidání custom headers
 `;
 
