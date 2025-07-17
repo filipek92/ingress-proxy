@@ -5,6 +5,7 @@ FROM $BUILD_FROM
 RUN apk add --no-cache \
     nginx \
     nginx-mod-http-lua \
+    nginx-mod-devel-kit \
     lua5.1 \
     lua5.1-socket \
     lua5.1-cjson \
