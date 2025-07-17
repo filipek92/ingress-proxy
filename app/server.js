@@ -14,6 +14,28 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Middleware pro logování hlaviček (debugging HTTP 414)
+app.use((req, res, next) => {
+    const headers = req.headers;
+    const headerSize = JSON.stringify(headers).length;
+    const userAgent = headers['user-agent'] || '';
+    const cookie = headers['cookie'] || '';
+    
+    console.log(`=== INCOMING REQUEST ===`);
+    console.log(`URL: ${req.method} ${req.url}`);
+    console.log(`Headers size: ${headerSize} bytes`);
+    console.log(`User-Agent length: ${userAgent.length}`);
+    console.log(`Cookie length: ${cookie.length}`);
+    
+    if (headerSize > 4000) {
+        console.log(`WARNING: Large headers detected (${headerSize} bytes)`);
+        console.log('All headers:', JSON.stringify(headers, null, 2));
+    }
+    
+    next();
+});
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
