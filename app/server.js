@@ -41,7 +41,20 @@ async function saveOptions(options) {
     try {
         await fs.writeFile(OPTIONS_FILE, JSON.stringify(options, null, 2));
         await generateNginxConfig(options);
-        return true;
+        
+        // Reload nginx po vygenerování konfigurace
+        const { exec } = require('child_process');
+        return new Promise((resolve) => {
+            exec('nginx -s reload', (error, stdout, stderr) => {
+                if (error) {
+                    console.error('Chyba při reload nginx po uložení:', error);
+                    resolve(false);
+                } else {
+                    console.log('Nginx byl úspěšně reloadován po uložení');
+                    resolve(true);
+                }
+            });
+        });
     } catch (error) {
         console.error('Chyba při ukládání options:', error);
         return false;
@@ -339,7 +352,17 @@ app.listen(PORT, () => {
     
     // Načtení a aplikace konfigurace při startu
     loadOptions().then(options => {
-        generateNginxConfig(options);
+        generateNginxConfig(options).then(() => {
+            // Reload nginx po vygenerování konfigurace
+            const { exec } = require('child_process');
+            exec('nginx -s reload', (error, stdout, stderr) => {
+                if (error) {
+                    console.error('Chyba při reload nginx při startu:', error);
+                } else {
+                    console.log('Nginx byl úspěšně reloadován při startu');
+                }
+            });
+        });
     });
 });
 
