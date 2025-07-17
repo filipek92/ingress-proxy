@@ -65,7 +65,7 @@
         <div class="error-icon">⚠️</div>
         <h1 class="error-title">Došlo k chybě</h1>
         <p class="error-message"><%= message %></p>
-        <a href="/" class="btn">Zpět na hlavní stránku</a>
+        <a href="<%= typeof baseUrl !== 'undefined' ? baseUrl : '' %>/" class="btn">Zpět na hlavní stránku</a>
     </div>
 </body>
 </html>

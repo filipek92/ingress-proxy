@@ -193,10 +193,19 @@ async function testDeviceConnection(device) {
 app.get('/', async (req, res) => {
     try {
         const options = await loadOptions();
-        res.render('index', { devices: options.devices, ssl: options.ssl });
+        // Detekce ingress prefixu z X-Ingress-Path header
+        const ingressPath = req.headers['x-ingress-path'] || '';
+        res.render('index', { 
+            devices: options.devices, 
+            ssl: options.ssl,
+            baseUrl: ingressPath 
+        });
     } catch (error) {
         console.error('Chyba při načítání hlavní stránky:', error);
-        res.status(500).render('error', { message: 'Chyba při načítání konfigurace' });
+        res.status(500).render('error', { 
+            message: 'Chyba při načítání konfigurace',
+            baseUrl: req.headers['x-ingress-path'] || ''
+        });
     }
 });
 

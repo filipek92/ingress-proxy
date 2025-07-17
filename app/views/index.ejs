@@ -409,6 +409,13 @@
     <script>
         let editingIndex = -1;
         
+        // Base URL pro API volání (funguje v ingress i standalone)
+        const baseUrl = '<%= baseUrl %>' || '';
+        
+        function apiUrl(path) {
+            return baseUrl + path;
+        }
+        
         // Modal functions
         function openAddDeviceModal() {
             editingIndex = -1;
@@ -421,7 +428,7 @@
             editingIndex = index;
             document.getElementById('modalTitle').textContent = 'Upravit zařízení';
             
-            fetch('/api/devices')
+            fetch(apiUrl('/api/devices'))
                 .then(response => response.json())
                 .then(devices => {
                     const device = devices[index];
@@ -483,7 +490,7 @@
                     formData.get('custom_headers').split('\n').filter(h => h.trim()) : []
             };
             
-            const url = editingIndex >= 0 ? `/api/devices/${editingIndex}` : '/api/devices';
+            const url = editingIndex >= 0 ? apiUrl(`/api/devices/${editingIndex}`) : apiUrl('/api/devices');
             const method = editingIndex >= 0 ? 'PUT' : 'POST';
             
             fetch(url, {
@@ -516,7 +523,7 @@
             button.innerHTML = '<span class="loading"></span> Testuje se...';
             button.disabled = true;
             
-            fetch(`/api/devices/${index}/test`, {
+            fetch(apiUrl(`/api/devices/${index}/test`), {
                 method: 'POST'
             })
             .then(response => response.json())
@@ -540,7 +547,7 @@
         // Delete device
         function deleteDevice(index) {
             if (confirm('Opravdu chcete smazat toto zařízení?')) {
-                fetch(`/api/devices/${index}`, {
+                fetch(apiUrl(`/api/devices/${index}`), {
                     method: 'DELETE'
                 })
                 .then(response => response.json())
@@ -566,7 +573,7 @@
             button.innerHTML = '<span class="loading"></span> Restartuje se...';
             button.disabled = true;
             
-            fetch('/api/reload')
+            fetch(apiUrl('/api/reload'))
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
