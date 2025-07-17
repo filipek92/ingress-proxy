@@ -149,7 +149,6 @@ location ${pathPrefix}/ {
     proxy_buffer_size 8k;
     proxy_buffers 16 8k;
     proxy_busy_buffers_size 16k;
-    large_client_header_buffers 4 16k;
     
     # Odstranění problematických hlaviček
     proxy_set_header Accept-Encoding "";
