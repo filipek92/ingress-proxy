@@ -100,9 +100,19 @@ location ${pathPrefix}/ {
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Proto $scheme;`;
+
+    // Minimalizování hlaviček - pokud je zapnuto, přidej jen základní hlavičky
+    const globalMinimize = options.minimize_headers || false;
+    const deviceMinimize = device.minimize_headers !== undefined ? device.minimize_headers : globalMinimize;
+    
+    if (!deviceMinimize) {
+        config += `
     proxy_set_header X-Forwarded-Host $host;
-    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-Port $server_port;`;
+    }
+
+    config += `
     
     # Timeout nastavení
     proxy_connect_timeout 30s;

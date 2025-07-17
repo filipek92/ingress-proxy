@@ -2,14 +2,16 @@
 
 Pokročilý proxy server pro přístup k lokálním zařízením v síti prostřednictvím Home Assistant Ingress systému.
 
-## Funkce
+## ✨ Funkce
 
-- **Proxy přístup**: Bezpečný přístup k lokálním zařízením přes Home Assistant
-- **Přepisování cest**: Automatické přepisování cest v HTML, CSS a JavaScript obsahu
-- **Flexibilní konfigurace**: Jednoduchá správa zařízení přes webové rozhraní
-- **Autentizace**: Volitelná Basic Auth pro jednotlivá zařízení
-- **Custom headers**: Možnost přidání vlastních HTTP hlaviček
-- **Testování připojení**: Vestavěné testování dostupnosti zařízení
+- 🌐 **Reverse proxy** pro místní zařízení přes nginx
+- 🔄 **Automatické přepisování cest** v HTML obsahu pomocí Lua
+- 🔐 **Basic HTTP autentizace** pro zabezpečené zařízení
+- 📱 **Responzivní webové rozhraní** pro správu zařízení
+- 🔧 **Vlastní HTTP hlavičky** pro každé zařízení
+- 🏠 **Home Assistant ingress** kompatibilita
+- ⚡ **Minimalizace HTTP hlaviček** pro řešení chyby 414
+- 🔍 **Test konektivity** zařízení přímo z UI
 
 ## Instalace
 
@@ -104,6 +106,14 @@ Addon poskytuje intuitivní webové rozhraní pro:
 - Restartování Nginx
 
 ## Řešení problémů
+
+### HTTP 414 "Request-URI Too Large"
+Tato chyba se může objevit u zařízení, která mají problém s dlouhými HTTP hlavičkami, což je časté v ingress prostředí Home Assistant.
+
+**Řešení:**
+1. V konfiguraci zařízení zapněte **"Minimalizovat HTTP hlavičky"**
+2. Toto odstraní volitelné hlavičky jako `X-Forwarded-Host` a `X-Forwarded-Port`
+3. Zachovají se pouze základní hlavičky: `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`
 
 ### Zařízení není dostupné
 1. Zkontrolujte IP adresu a port

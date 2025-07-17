@@ -321,6 +321,7 @@
                                 <div><strong>Cesta:</strong> <%= device.path_prefix || `/${device.name.replace(/[^a-zA-Z0-9]/g, '_')}` %></div>
                                 <div><strong>Přepisování cest:</strong> <%= device.rewrite_paths !== false ? 'Ano' : 'Ne' %></div>
                                 <div><strong>Autentizace:</strong> <%= device.auth_required ? 'Vyžadována' : 'Nevyžadována' %></div>
+                                <div><strong>Minimalizace hlaviček:</strong> <%= device.minimize_headers ? 'Zapnuto' : 'Vypnuto' %></div>
                             </div>
                             <div class="device-actions">
                                 <a href="<%= baseUrl %><%= device.path_prefix || `/${device.name.replace(/[^a-zA-Z0-9]/g, '_')}` %>" 
@@ -377,6 +378,14 @@
                         <input type="checkbox" id="authRequired" name="auth_required">
                         <label for="authRequired">Vyžadovat autentizaci</label>
                     </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="minimizeHeaders" name="minimize_headers">
+                        <label for="minimizeHeaders">Minimalizovat HTTP hlavičky</label>
+                    </div>
+                    <small>Pomáhá řešit chybu 414 "Request-URI Too Large" u některých zařízení</small>
                 </div>
                 
                 <div id="authFields" style="display: none;">
@@ -438,6 +447,7 @@
                     document.getElementById('pathPrefix').value = device.path_prefix || '';
                     document.getElementById('rewritePaths').checked = device.rewrite_paths !== false;
                     document.getElementById('authRequired').checked = device.auth_required || false;
+                    document.getElementById('minimizeHeaders').checked = device.minimize_headers || false;
                     document.getElementById('basicAuthUser').value = device.basic_auth_user || '';
                     document.getElementById('basicAuthPass').value = device.basic_auth_pass || '';
                     
@@ -484,6 +494,7 @@
                 path_prefix: formData.get('path_prefix'),
                 rewrite_paths: formData.get('rewrite_paths') === 'on',
                 auth_required: formData.get('auth_required') === 'on',
+                minimize_headers: formData.get('minimize_headers') === 'on',
                 basic_auth_user: formData.get('basic_auth_user'),
                 basic_auth_pass: formData.get('basic_auth_pass'),
                 custom_headers: formData.get('custom_headers') ? 
