@@ -1,6 +1,6 @@
 name: "Ingress Proxy"
 description: "Proxy server pro přístup k lokálním zařízením v síti s možností přepisování cest"
-version: "1.0.2"
+version: "1.0.3"
 slug: "ingress-proxy"
 arch:
   - aarch64
