@@ -106,7 +106,13 @@ location ${pathPrefix}/ {
 
     if (device.custom_headers) {
         for (const header of device.custom_headers) {
-            config += `    proxy_set_header ${header};\n`;
+            // Parsování header formátu "Header-Name: value" -> "proxy_set_header Header-Name value;"
+            const headerParts = header.split(':');
+            if (headerParts.length >= 2) {
+                const headerName = headerParts[0].trim();
+                const headerValue = headerParts.slice(1).join(':').trim();
+                config += `    proxy_set_header ${headerName} ${headerValue};\n`;
+            }
         }
     }
 

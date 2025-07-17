@@ -16,6 +16,8 @@ RUN apk add --no-cache \
 
 # Vytvoření adresářů
 RUN mkdir -p /etc/nginx/lua \
+    /etc/nginx/devices \
+    /etc/nginx/conf.d \
     /var/log/nginx \
     /var/lib/nginx \
     /run/nginx \
