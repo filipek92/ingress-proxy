@@ -1,0 +1,17 @@
+{
+  "devices": [
+    {
+      "name": "IQR23",
+      "target_host": "10.6.2.20",
+      "target_port": 80,
+      "path_prefix": "/topeni",
+      "rewrite_paths": false,
+      "custom_headers": [
+        "X-Forwarded-For: $remote_addr"
+      ],
+      "auth_required": false
+    }
+  ],
+  "ssl": false,
+  "log_level": "info"
+}
