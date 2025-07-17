@@ -323,7 +323,7 @@
                                 <div><strong>Autentizace:</strong> <%= device.auth_required ? 'Vyžadována' : 'Nevyžadována' %></div>
                             </div>
                             <div class="device-actions">
-                                <a href="<%= device.path_prefix || `/${device.name.replace(/[^a-zA-Z0-9]/g, '_')}` %>" 
+                                <a href="<%= baseUrl %><%= device.path_prefix || `/${device.name.replace(/[^a-zA-Z0-9]/g, '_')}` %>" 
                                    class="btn" target="_blank">📱 Otevřít</a>
                                 <button class="btn btn-warning" onclick="testDevice(<%= index %>)">🔍 Test</button>
                                 <button class="btn btn-primary" onclick="editDevice(<%= index %>)">✏️ Upravit</button>
