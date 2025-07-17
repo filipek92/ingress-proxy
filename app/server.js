@@ -73,7 +73,7 @@ async function generateNginxConfig(options) {
 
         // Generování konfigurace pro každé zařízení
         for (const device of options.devices) {
-            const deviceConfig = generateDeviceConfig(device);
+            const deviceConfig = generateDeviceConfig(device, options);
             const configPath = path.join(NGINX_DEVICES_DIR, `${device.name.replace(/[^a-zA-Z0-9]/g, '_')}.conf`);
             await fs.writeFile(configPath, deviceConfig);
         }
@@ -89,7 +89,7 @@ async function generateNginxConfig(options) {
 }
 
 // Generování konfigurace pro jednotlivé zařízení
-function generateDeviceConfig(device) {
+function generateDeviceConfig(device, options) {
     const pathPrefix = device.path_prefix || `/${device.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
     const upstreamName = device.name.replace(/[^a-zA-Z0-9]/g, '_');
     
